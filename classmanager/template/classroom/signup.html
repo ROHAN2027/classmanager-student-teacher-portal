@@ -1,18 +1,36 @@
 {% extends 'classroom/base.html' %}
-{% load static %}
+
 {% block content %}
-
-  <div class="login-page">
-  <img src="{% static 'images/login-background.PNG' %}" alt="">
-    <div class="signup">
-      <h1>Sign Up</h1>
-      <br>
-      <a href="{% url 'classroom:StudentSignUp' %}"><p>I'm a Student</p> </a>
-      <br>
-      <a href="{% url 'classroom:TeacherSignUp' %}"><p>I'm a Teacher</p> </a>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-lg border-0">
+        <div class="card-body p-5">
+          <div class="text-center mb-5">
+            <i class="fas fa-user-plus fa-3x text-primary mb-3"></i>
+            <h2 class="fw-bold">Sign Up</h2>
+            <p class="text-muted">Choose your account type</p>
+          </div>
+          
+          <div class="d-grid gap-4">
+            <!-- Fixed URLs - removed leading slash to make them truly absolute -->
+            <a href="{% url 'classroom:TeacherSignUp' %}" class="btn btn-lg btn-primary">
+              <i class="fas fa-chalkboard-teacher me-2"></i>
+              I'm a Teacher
+            </a>
+            
+            <a href="{% url 'classroom:StudentSignUp' %}" class="btn btn-lg btn-outline-primary">
+              <i class="fas fa-user-graduate me-2"></i>
+              I'm a Student
+            </a>
+          </div>
+          
+          <div class="mt-4 text-center">
+            <p>Already have an account? <a href="{% url 'classroom:login' %}" class="text-primary">Login here</a></p>
+          </div>
+        </div>
+      </div>
     </div>
-    </div>
-
-
-
+  </div>
+</div>
 {% endblock %}

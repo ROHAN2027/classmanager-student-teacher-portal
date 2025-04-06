@@ -78,13 +78,16 @@ def StudentSignUp(request):
 
 ## Sign Up page which will ask whether you are teacher or student.
 def SignUp(request):
+    print("Signup view called")
     return render(request,'classroom/signup.html',{})
 
 ## login view.
 def user_login(request):
+    print("Login view called, method:", request.method)
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
+        print(f"Login attempt for user: {username}")
 
         user = authenticate(username=username,password=password)
 

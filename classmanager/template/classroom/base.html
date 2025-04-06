@@ -1,81 +1,998 @@
 <!DOCTYPE html>
 {% load static %}
-<html lang="en" dir="ltr">
+<html lang="en" dir="ltr" data-theme="light">
   <head>
     <meta charset="utf-8">
-    <title>Student manger</title>
-    <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-
-<!-- jQuery library -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-<!-- Popper JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-
-<!-- Latest compiled JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Manager</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Existing CSS files (maintained for compatibility) -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/searchbar.css' %}">
     <link rel="stylesheet" href="{% static 'css/newbase.css' %}">
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css">
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Source+Sans+Pro&display=swap" rel="stylesheet">
-
+    
+    <!-- Load Bootstrap 4 for compatibility with existing components -->
     {% load bootstrap4 %}
-    {% bootstrap_css %}
     {% bootstrap_javascript jquery='full' %}
+    
+    <!-- Custom Modern UI Styles -->
+    <style>
+      /* CSS Variables for theming */
+      :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3f37c9;
+        --accent-color: #4cc9f0;
+        --text-primary: #333;
+        --text-secondary: #555;
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8f9fa;
+        --sidebar-width: 250px;
+        --sidebar-collapsed-width: 70px;
+        --header-height: 60px;
+        --shadow-sm: 0 2px 8px rgba(0,0,0,0.1);
+        --shadow-md: 0 5px 15px rgba(0,0,0,0.07);
+        --transition-speed: 0.3s;
+        --border-radius: 8px;
+      }
+
+      /* Dark theme variables */
+      [data-theme="dark"] {
+        --primary-color: #4cc9f0;
+        --secondary-color: #4895ef;
+        --accent-color: #4361ee;
+        --text-primary: #e6e6e6;
+        --text-secondary: #adb5bd;
+        --bg-primary: #212529;
+        --bg-secondary: #343a40;
+      }
+
+      /* Base styles */
+      body {
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+        margin: 0;
+        padding: 0;
+        transition: background-color var(--transition-speed), color var(--transition-speed);
+        overflow-x: hidden;
+      }
+
+      /* Layout structure */
+      .app-container {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Header styles */
+      header {
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: var(--sidebar-width);
+        height: var(--header-height);
+        background-color: var(--bg-primary);
+        box-shadow: var(--shadow-sm);
+        z-index: 100;
+        transition: left var(--transition-speed);
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+      }
+
+      .header-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+      }
+
+      body.sidebar-collapsed header {
+        left: var(--sidebar-collapsed-width);
+      }
+
+      /* Sidebar styles */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: var(--sidebar-width);
+        height: 100vh;
+        background-color: var(--bg-primary);
+        box-shadow: var(--shadow-sm);
+        transition: width var(--transition-speed), transform var(--transition-speed);
+        z-index: 200;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      .sidebar.collapsed {
+        width: var(--sidebar-collapsed-width);
+      }
+
+      .sidebar-header {
+        height: var(--header-height);
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        background-color: var(--primary-color);
+        color: white;
+      }
+
+      .sidebar-brand {
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: white;
+        text-decoration: none;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .sidebar-toggle {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-size: 1.2rem;
+        margin-right: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .sidebar-nav {
+        padding: 15px 0;
+      }
+
+      .nav-category {
+        padding: 10px 20px;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .sidebar.collapsed .nav-category {
+        text-align: center;
+        padding: 10px 5px;
+      }
+
+      .sidebar-nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .sidebar-nav li {
+        margin: 5px 0;
+      }
+
+      .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        padding: 10px 20px;
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+      }
+
+      .sidebar-nav a:hover {
+        background-color: var(--bg-secondary);
+        border-left: 3px solid var(--primary-color);
+      }
+
+      .sidebar-nav a.active {
+        background-color: rgba(67, 97, 238, 0.1);
+        border-left: 3px solid var(--primary-color);
+        color: var(--primary-color);
+      }
+
+      .sidebar-nav i {
+        margin-right: 10px;
+        font-size: 1.1rem;
+        width: 20px;
+        text-align: center;
+      }
+
+      .sidebar.collapsed .nav-text {
+        display: none;
+      }
+
+      .sidebar.collapsed .sidebar-nav a {
+        justify-content: center;
+        padding: 15px 5px;
+      }
+
+      .sidebar.collapsed .sidebar-nav i {
+        margin-right: 0;
+        font-size: 1.2rem;
+      }
+
+      /* Main content area */
+      main {
+        flex: 1;
+        margin-left: var(--sidebar-width);
+        margin-top: var(--header-height);
+        padding: 20px;
+        transition: margin-left var(--transition-speed);
+        min-height: calc(100vh - var(--header-height));
+      }
+
+      body.sidebar-collapsed main {
+        margin-left: var(--sidebar-collapsed-width);
+      }
+
+      /* Dashboard components */
+      .dashboard-header {
+        margin-bottom: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .dashboard-title {
+        font-weight: 600;
+        font-size: 1.8rem;
+        color: var(--text-primary);
+      }
+
+      .dashboard-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .dashboard-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .card {
+        background-color: var(--bg-primary);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: none;
+      }
+
+      .card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .card-header {
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        background-color: var(--bg-primary);
+        padding: 15px 20px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top-left-radius: var(--border-radius);
+        border-top-right-radius: var(--border-radius);
+      }
+
+      .card-body {
+        padding: 20px;
+      }
+
+      /* Theme toggle */
+      .theme-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+      }
+
+      .theme-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .theme-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 24px;
+      }
+
+      .theme-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+      }
+
+      input:checked + .theme-slider {
+        background-color: var(--primary-color);
+      }
+
+      input:checked + .theme-slider:before {
+        transform: translateX(26px);
+      }
+
+      /* Utility classes */
+      .badge-notification {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        padding: 0.25rem 0.5rem;
+        border-radius: 50%;
+        background-color: var(--accent-color);
+        color: white;
+        font-size: 0.75rem;
+      }
+
+      .text-primary {
+        color: var(--primary-color) !important;
+      }
+
+      .bg-primary {
+        background-color: var(--primary-color) !important;
+        color: white;
+      }
+
+      /* Button styles */
+      .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+      }
+
+      .btn-primary:hover {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+      }
+
+      .btn-outline-primary {
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+      }
+
+      .btn-outline-primary:hover {
+        background-color: var(--primary-color);
+        color: white;
+      }
+
+      /* Animation utilities */
+      .skeleton {
+        animation: pulse 1.5s infinite;
+        background: linear-gradient(
+          90deg,
+          rgba(0, 0, 0, 0.06),
+          rgba(0, 0, 0, 0.1),
+          rgba(0, 0, 0, 0.06)
+        );
+        background-size: 200% 100%;
+        border-radius: var(--border-radius);
+      }
+
+      @keyframes pulse {
+        0% {
+          background-position: 0% 0%;
+        }
+        100% {
+          background-position: -200% 0%;
+        }
+      }
+
+      /* Mobile responsive styles */
+      @media (max-width: 768px) {
+        .sidebar {
+          transform: translateX(-100%);
+          width: 250px;
+        }
+        
+        .sidebar.active {
+          transform: translateX(0);
+        }
+        
+        header {
+          left: 0;
+        }
+        
+        main {
+          margin-left: 0;
+        }
+        
+        body.sidebar-collapsed main {
+          margin-left: 0;
+        }
+
+        .mobile-menu-toggle {
+          display: flex !important;
+        }
+
+        .mobile-nav {
+          display: flex !important;
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background-color: var(--bg-primary);
+          box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+          z-index: 99;
+          height: 60px;
+        }
+      }
+      
+      .mobile-menu-toggle {
+        display: none;
+        background: none;
+        border: none;
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
+      
+      .mobile-nav {
+        display: none;
+        justify-content: space-around;
+        align-items: center;
+      }
+      
+      .mobile-nav a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 0.7rem;
+      }
+      
+      .mobile-nav a.active {
+        color: var(--primary-color);
+      }
+      
+      .mobile-nav i {
+        font-size: 1.2rem;
+        margin-bottom: 3px;
+      }
+    </style>
   </head>
   <body>
-
-    <nav>
-      <div class="toggle">
-        <a href="{% url 'home' %}">Class Manager</a>
-        <i class="fa fa-bars menu"></i>
-      </div>
-    </nav>
-    <div class="sidebar">
-      <ul>
-        {% if user.is_authenticated %}
-        {% if user.is_teacher%}
-          <li> <a href="{% url 'classroom:upload_assignment' %}">Upload Assignment</a> </li>
-          <li> <a href="{% url 'classroom:assignment_list' %}">Assignment list</a> </li>
-          <li> <a href="{% url 'classroom:submit_list' %}">View Submissions</a> </li>
-          <li> <a href="{% url 'classroom:students_list' %}">All Students List</a> </li>
-          <li> <a href="{% url 'classroom:class_student_list'%}">Class Students List</a> </li>
-          <li> <a href="{% url 'classroom:write_notice' %}">Write Notice</a> </li>
-          <li> <a href="{% url 'classroom:messages_list' pk=user.pk %}">Inbox</a> </li>
-          <li> <a href="{% url 'classroom:teacher_detail' pk=user.pk %}">Profile</a> </li>
+    <div class="app-container">
+      <!-- Sidebar Navigation -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <a href="{% url 'home' %}" class="sidebar-brand">Class Manager</a>
+        </div>
+        
+        <div class="sidebar-nav">
+          {% if user.is_authenticated %}
+            {% if user.is_teacher %}
+              <div class="nav-category">Management</div>
+              <ul>
+                <li>
+                  <a href="{% url 'classroom:upload_assignment' %}" class="nav-link">
+                    <i class="fas fa-upload"></i>
+                    <span class="nav-text">Upload Assignment</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="{% url 'classroom:assignment_list' %}" class="nav-link">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span class="nav-text">Assignment List</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="{% url 'classroom:submit_list' %}" class="nav-link">
+                    <i class="fas fa-tasks"></i>
+                    <span class="nav-text">View Submissions</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="{% url 'classroom:write_notice' %}" class="nav-link">
+                    <i class="fas fa-bullhorn"></i>
+                    <span class="nav-text">Write Notice</span>
+                  </a>
+                </li>
+              </ul>
+              
+              <div class="nav-category">Students</div>
+              <ul>
+                <li>
+                  <a href="{% url 'classroom:students_list' %}" class="nav-link">
+                    <i class="fas fa-user-graduate"></i>
+                    <span class="nav-text">All Students</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="{% url 'classroom:class_student_list' %}" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span class="nav-text">Class Students</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="{% url 'classroom:teachers_list' %}" class="nav-link">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span class="nav-text">Teachers</span>
+                  </a>
+                </li>
+              </ul>
+            {% else %}
+              <div class="nav-category">Student Portal</div>
+              <ul>
+                <li>
+                  <a href="{% url 'classroom:all_marks_list' pk=user.pk %}" class="nav-link">
+                    <i class="fas fa-chart-bar"></i>
+                    <span class="nav-text">Marks</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="{% url 'classroom:class_notice' pk=user.pk %}" class="nav-link">
+                    <i class="fas fa-bell"></i>
+                    <span class="nav-text">Class Notice</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="{% url 'classroom:class_assignment' %}" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    <span class="nav-text">Assignments</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="{% url 'classroom:teachers_list' %}" class="nav-link">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span class="nav-text">Teachers</span>
+                  </a>
+                </li>
+              </ul>
+            {% endif %}
+            
+            <div class="nav-category">Account</div>
+            <ul>
+              {% if user.is_teacher %}
+              <li>
+                <a href="{% url 'classroom:messages_list' pk=user.pk %}" class="nav-link position-relative">
+                  <i class="fas fa-envelope"></i>
+                  <span class="nav-text">Inbox</span>
+                  <span class="badge-notification">3</span>
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'classroom:teacher_detail' pk=user.pk %}" class="nav-link">
+                  <i class="fas fa-user-circle"></i>
+                  <span class="nav-text">Profile</span>
+                </a>
+              </li>
+              {% else %}
+              <li>
+                <a href="{% url 'classroom:student_detail' pk=user.pk %}" class="nav-link">
+                  <i class="fas fa-user-circle"></i>
+                  <span class="nav-text">Profile</span>
+                </a>
+              </li>
+              {% endif %}
+              <li>
+                <a href="{% url 'classroom:change_password' %}" class="nav-link">
+                  <i class="fas fa-key"></i>
+                  <span class="nav-text">Change Password</span>
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'classroom:logout' %}" class="nav-link">
+                  <i class="fas fa-sign-out-alt"></i>
+                  <span class="nav-text">Logout</span>
+                </a>
+              </li>
+            </ul>
           {% else %}
-          <li> <a href="{% url 'classroom:all_marks_list' pk=user.pk %}">Marks</a> </li>
-          <li> <a href="{% url 'classroom:class_notice' pk=user.pk %}">Class Notice</a> </li>
-          <li> <a href="{% url 'classroom:class_assignment' %}">Class Assignment</a> </li>
-          <li> <a href="{% url 'classroom:teachers_list' %}">Teacher list</a> </li>
-          <li> <a href="{% url 'classroom:student_detail' pk=user.pk %}">Profile</a> </li>
+            <div class="nav-category">Welcome</div>
+            <ul>
+              <li>
+                <a href="{% url 'classroom:login' %}" class="nav-link head-left">
+                  <i class="fas fa-sign-in-alt"></i>
+                  <span class="nav-text">Login</span>
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'classroom:signup' %}" class="nav-link head-left">
+                  <i class="fas fa-user-plus"></i>
+                  <span class="nav-text">Sign Up</span>
+                </a>
+              </li>
+            </ul>
           {% endif %}
-          <li> <a href="{% url 'classroom:change_password' %}">Change Password</a> </li>
-          <li> <a href="{% url 'classroom:logout' %}">Logout</a> </li>
-          {% else %}
-          <li><a class="head-left" href="{% url 'classroom:login' %}">Login</a></li>
-          <li><a class="head-left" href="{% url 'classroom:signup' %}">Sign Up</a></li>
+        </div>
+      </div>
+      
+      <!-- Header -->
+      <header>
+        <div class="header-content">
+          <button class="mobile-menu-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          
+          <div class="d-flex align-items-center">
+            {% if user.is_authenticated %}
+              <div class="dropdown">
+                <button class="btn btn-link dropdown-toggle text-decoration-none" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-user-circle me-1"></i>
+                  <span>{{ user.username }}</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                  {% if user.is_teacher %}
+                    <li><a class="dropdown-item" href="{% url 'classroom:teacher_detail' pk=user.pk %}">Profile</a></li>
+                  {% else %}
+                    <li><a class="dropdown-item" href="{% url 'classroom:student_detail' pk=user.pk %}">Profile</a></li>
+                  {% endif %}
+                  <li><a class="dropdown-item" href="{% url 'classroom:change_password' %}">Change Password</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="{% url 'classroom:logout' %}">Logout</a></li>
+                </ul>
+              </div>
+            {% endif %}
+            
+            <div class="ms-3">
+              <label class="theme-switch" for="themeToggle">
+                <input type="checkbox" id="themeToggle">
+                <span class="theme-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Main Content -->
+      <main>
+        {% if user.is_authenticated %}
+          <!-- Dashboard UI for authenticated users -->
+          <div class="dashboard-header">
+            <h1 class="dashboard-title">
+              {% if user.is_teacher %}Teacher Dashboard{% else %}Student Dashboard{% endif %}
+            </h1>
+            <div class="dashboard-actions">
+              {% if user.is_teacher %}
+                <a href="{% url 'classroom:upload_assignment' %}" class="btn btn-sm btn-primary">
+                  <i class="fas fa-plus me-1"></i> New Assignment
+                </a>
+              {% endif %}
+            </div>
+          </div>
+          
+          <!-- Dashboard Cards - These will only show on the home page -->
+          <div id="dashboardContent">
+            {% if request.path == '/' or request.path == '/home/' %}
+              {% if user.is_teacher %}
+                <!-- Teacher Dashboard -->
+                <div class="dashboard-row">
+                  <div class="card">
+                    <div class="card-header">
+                      <span>Assignments</span>
+                      <i class="fas fa-clipboard text-primary"></i>
+                    </div>
+                    <div class="card-body">
+                      <h3 class="mb-0">5 Active</h3>
+                      <p class="text-muted">2 pending submissions</p>
+                      <div class="progress mt-2">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="card">
+                    <div class="card-header">
+                      <span>Students</span>
+                      <i class="fas fa-user-graduate text-primary"></i>
+                    </div>
+                    <div class="card-body">
+                      <h3 class="mb-0">32 Total</h3>
+                      <p class="text-muted">5 new this semester</p>
+                      <a href="{% url 'classroom:students_list' %}" class="btn btn-sm btn-outline-primary mt-2">View All</a>
+                    </div>
+                  </div>
+                  
+                  <div class="card">
+                    <div class="card-header">
+                      <span>Notifications</span>
+                      <i class="fas fa-bell text-primary"></i>
+                    </div>
+                    <div class="card-body">
+                      <h3 class="mb-0">3 Unread</h3>
+                      <p class="text-muted">Last updated 2 hours ago</p>
+                      <a href="{% url 'classroom:messages_list' pk=user.pk %}" class="btn btn-sm btn-outline-primary mt-2">View Inbox</a>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="card mt-4">
+                  <div class="card-header">
+                    <span>Recent Submissions</span>
+                    <a href="{% url 'classroom:submit_list' %}" class="btn btn-sm btn-link">View All</a>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                      <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                          <h6 class="mb-1">Database Assignment #3</h6>
+                          <small>2 days ago</small>
+                        </div>
+                        <p class="mb-1">Submitted by John Smith</p>
+                      </div>
+                      <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                          <h6 class="mb-1">Programming Project</h6>
+                          <small>3 days ago</small>
+                        </div>
+                        <p class="mb-1">Submitted by Emily Johnson</p>
+                      </div>
+                      <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                          <h6 class="mb-1">Data Structures Quiz</h6>
+                          <small>1 week ago</small>
+                        </div>
+                        <p class="mb-1">Submitted by Michael Brown</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% else %}
+                <!-- Student Dashboard -->
+                <div class="dashboard-row">
+                  <div class="card">
+                    <div class="card-header">
+                      <span>Assignments</span>
+                      <i class="fas fa-tasks text-primary"></i>
+                    </div>
+                    <div class="card-body">
+                      <h3 class="mb-0">3 Due Soon</h3>
+                      <p class="text-muted">Next due: Database Project (2 days)</p>
+                      <a href="{% url 'classroom:class_assignment' %}" class="btn btn-sm btn-outline-primary mt-2">View All</a>
+                    </div>
+                  </div>
+                  
+                  <div class="card">
+                    <div class="card-header">
+                      <span>Grades</span>
+                      <i class="fas fa-chart-line text-primary"></i>
+                    </div>
+                    <div class="card-body">
+                      <h3 class="mb-0">87% Average</h3>
+                      <p class="text-muted">Last grade: B+ (Programming)</p>
+                      <a href="{% url 'classroom:all_marks_list' pk=user.pk %}" class="btn btn-sm btn-outline-primary mt-2">View Details</a>
+                    </div>
+                  </div>
+                  
+                  <div class="card">
+                    <div class="card-header">
+                      <span>Notices</span>
+                      <i class="fas fa-bullhorn text-primary"></i>
+                    </div>
+                    <div class="card-body">
+                      <h3 class="mb-0">2 New</h3>
+                      <p class="text-muted">Last updated 6 hours ago</p>
+                      <a href="{% url 'classroom:class_notice' pk=user.pk %}" class="btn btn-sm btn-outline-primary mt-2">View All</a>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="card mt-4">
+                  <div class="card-header">
+                    <span>Upcoming Deadlines</span>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                      <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                          <h6 class="mb-1">Database Project</h6>
+                          <small class="text-danger">Due in 2 days</small>
+                        </div>
+                        <p class="mb-1">Create an ER diagram and implement the schema</p>
+                      </div>
+                      <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                          <h6 class="mb-1">Programming Assignment</h6>
+                          <small class="text-warning">Due in 5 days</small>
+                        </div>
+                        <p class="mb-1">Implement a binary search tree</p>
+                      </div>
+                      <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                          <h6 class="mb-1">Math Homework</h6>
+                          <small>Due in 1 week</small>
+                        </div>
+                        <p class="mb-1">Solve problems from Chapter 5</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+            {% endif %}
+            
+            <!-- Original content block - This ensures existing pages work properly -->
+            <div class="mt-4">
+              {% block content %}
+              {% endblock %}
+            </div>
+          </div>
+        {% else %}
+          <!-- Content for unauthenticated users -->
+          <div class="container py-5">
+            <div class="text-center mb-5">
+              <h1 class="display-4 fw-bold">Welcome to Class Manager</h1>
+              <p class="lead">Your comprehensive classroom management solution</p>
+            </div>
+            
+            <div class="row justify-content-center">
+              <div class="col-md-8">
+                <div class="card shadow-lg border-0">
+                  <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                      <i class="fas fa-graduation-cap fa-4x text-primary mb-3"></i>
+                      <h2>Get Started</h2>
+                      <p>Login or sign up to access your classroom portal</p>
+                    </div>
+                    
+                    <div class="d-flex justify-content-center gap-3">
+                      <a href="{% url 'classroom:login' %}" class="btn btn-lg btn-primary px-4">
+                        <i class="fas fa-sign-in-alt me-2"></i> Login
+                      </a>
+                      <a href="{% url 'classroom:signup' %}" class="btn btn-lg btn-outline-primary px-4">
+                        <i class="fas fa-user-plus me-2"></i> Sign Up
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Content block for unauthenticated users is within the main template content block -->
+              </div>
+            </div>
+          </div>
         {% endif %}
-      </ul>
+      </main>
+      
+      <!-- Mobile Navigation -->
+      <nav class="mobile-nav">
+        <a href="{% url 'home' %}" class="{% if request.path == '/' %}active{% endif %}">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </a>
+        
+        {% if user.is_authenticated %}
+          {% if user.is_teacher %}
+            <a href="{% url 'classroom:assignment_list' %}" class="{% if 'assignment' in request.path %}active{% endif %}">
+              <i class="fas fa-clipboard-list"></i>
+              <span>Assignments</span>
+            </a>
+            <a href="{% url 'classroom:students_list' %}" class="{% if 'student' in request.path %}active{% endif %}">
+              <i class="fas fa-user-graduate"></i>
+              <span>Students</span>
+            </a>
+          {% else %}
+            <a href="{% url 'classroom:class_assignment' %}" class="{% if 'assignment' in request.path %}active{% endif %}">
+              <i class="fas fa-book"></i>
+              <span>Assignments</span>
+            </a>
+            <a href="{% url 'classroom:all_marks_list' pk=user.pk %}" class="{% if 'marks' in request.path %}active{% endif %}">
+              <i class="fas fa-chart-bar"></i>
+              <span>Marks</span>
+            </a>
+          {% endif %}
+          
+          {% if user.is_teacher %}
+            <a href="{% url 'classroom:teacher_detail' pk=user.pk %}" class="{% if 'profile' in request.path %}active{% endif %}">
+          {% else %}
+            <a href="{% url 'classroom:student_detail' pk=user.pk %}" class="{% if 'profile' in request.path %}active{% endif %}">
+          {% endif %}
+            <i class="fas fa-user-circle"></i>
+            <span>Profile</span>
+          </a>
+        {% else %}
+          <a href="{% url 'classroom:login' %}" class="{% if 'login' in request.path %}active{% endif %} head-left">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Login</span>
+          </a>
+          <a href="{% url 'classroom:signup' %}" class="{% if 'signup' in request.path %}active{% endif %} head-left">
+            <i class="fas fa-user-plus"></i>
+            <span>Sign Up</span>
+          </a>
+        {% endif %}
+      </nav>
     </div>
 
-      {% block content %}
-      {% endblock %}
-
-
-      <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-      <script type="text/javascript">
-        $(document).ready(function(){
-          $('.menu').click(function(){
-            $('ul').toggleClass('active');
-          })
-        })
-      </script>
-
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+      // Initialize sidebar toggle functionality
+      document.addEventListener('DOMContentLoaded', function() {
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.querySelector('.sidebar');
+        const body = document.body;
+        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+        const themeToggle = document.getElementById('themeToggle');
+        
+        // Check for saved sidebar state
+        const sidebarCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+        if (sidebarCollapsed) {
+          sidebar.classList.add('collapsed');
+          body.classList.add('sidebar-collapsed');
+        }
+        
+        // Handle sidebar toggle
+        sidebarToggle.addEventListener('click', function() {
+          sidebar.classList.toggle('collapsed');
+          body.classList.toggle('sidebar-collapsed');
+          localStorage.setItem('sidebar-collapsed', sidebar.classList.contains('collapsed'));
+        });
+        
+        // Mobile menu toggle
+        if (mobileMenuToggle) {
+          mobileMenuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+          });
+        }
+        
+        // Handle theme toggle
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        if (savedTheme === 'dark') {
+          themeToggle.checked = true;
+        }
+        
+        themeToggle.addEventListener('change', function() {
+          if (this.checked) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+          } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+            localStorage.setItem('theme', 'light');
+          }
+        });
+        
+        // Add active class to current page in sidebar
+        const currentPath = window.location.pathname;
+        const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+        
+        sidebarLinks.forEach(link => {
+          if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+          }
+        });
+        
+        // Initialize any tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Handle any loading animations
+        window.addEventListener('load', function() {
+          document.querySelectorAll('.skeleton').forEach(function(element) {
+            element.classList.remove('skeleton');
+          });
+        });
+      });
+    </script>
   </body>
 </html>

@@ -23,5 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.HomePage.as_view(),name="home"),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('classroom/',include('classroom.urls')),
+    path('classroom/',include('classroom.urls', namespace='classroom')),  # This is correct
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

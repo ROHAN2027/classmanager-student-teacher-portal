@@ -21,7 +21,7 @@
     </div>
     {% endif %}
     <h1>Login</h1>
-    <form action="{% url 'classroom:login' %}" method="post">
+    <form action="/classroom/login/" method="post">
       {% csrf_token %}
       <p>Username:</p>
       <input type="text" name="username" placeholder="Enter your username">
