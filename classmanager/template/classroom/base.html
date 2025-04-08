@@ -832,7 +832,10 @@
       document.addEventListener('DOMContentLoaded', function() {
         // Get necessary elements
         const body = document.body;
+        const htmlElement = document.documentElement;
         const sidebarToggle = document.getElementById('sidebarToggle');
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('i');
         
         // Initialize sidebar toggle functionality
         if (sidebarToggle) {
@@ -856,6 +859,40 @@
           body.classList.add('sidebar-collapsed');
           if (sidebarToggle) {
             sidebarToggle.innerHTML = '<i class="fas fa-chevron-right"></i>';
+          }
+        }
+        
+        // Theme toggle functionality
+        if (themeToggle) {
+          // Function to update theme
+          function updateTheme(isDark) {
+            if (isDark) {
+              body.classList.add('dark-mode');
+              htmlElement.classList.remove('light-mode');
+              htmlElement.classList.add('dark-mode');
+              themeIcon.className = 'fas fa-sun'; // Change to sun icon in dark mode
+              localStorage.setItem('theme', 'dark');
+            } else {
+              body.classList.remove('dark-mode');
+              htmlElement.classList.add('light-mode');
+              htmlElement.classList.remove('dark-mode');
+              themeIcon.className = 'fas fa-moon'; // Change to moon icon in light mode
+              localStorage.setItem('theme', 'light');
+            }
+          }
+
+          // Handle theme toggle click
+          themeToggle.addEventListener('click', function() {
+            const isDarkMode = body.classList.contains('dark-mode');
+            updateTheme(!isDarkMode); // Toggle the theme
+          });
+
+          // Apply saved theme on page load
+          const savedTheme = localStorage.getItem('theme');
+          if (savedTheme === 'dark') {
+            updateTheme(true);
+          } else {
+            updateTheme(false);
           }
         }
         
