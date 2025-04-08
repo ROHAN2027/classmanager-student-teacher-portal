@@ -253,7 +253,8 @@
       /* IMPROVED: Text handling for collapsed state */
       .sidebar-text {
         display: inline-block !important;
-        color: var(--text-color) !important;
+        /* color: var(--text-color) !important; */
+        color: #748ea7;
         transition: opacity var(--transition-speed) ease;
       }
 
@@ -605,9 +606,9 @@
     <!-- Header -->
     <header class="app-header">
       <!-- Mobile menu toggle -->
-      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+      <!-- <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
         <i class="fas fa-bars"></i>
-      </button>
+      </button> -->
       
       <!-- Brand logo -->
       <a href="{% url 'home' %}" class="brand-logo">
@@ -829,94 +830,41 @@
     <!-- Enhanced JavaScript -->
     <script>
       document.addEventListener('DOMContentLoaded', function() {
+        // Get necessary elements
         const body = document.body;
-        const themeToggle = document.getElementById('themeToggle');
-        const menuToggle = document.getElementById('menuToggle');
         const sidebarToggle = document.getElementById('sidebarToggle');
-        const sidebarOverlay = document.querySelector('.sidebar-overlay');
         
-        // Force show all student navigation items on page load
-        function showStudentNavigation() {
-          document.querySelectorAll('.student-nav-item').forEach(item => {
-            item.style.display = 'block';
-            item.style.visibility = 'visible';
-            item.style.opacity = '1';
+        // Initialize sidebar toggle functionality
+        if (sidebarToggle) {
+          sidebarToggle.addEventListener('click', function() {
+            console.log('Sidebar toggle clicked'); // Debug line
+            body.classList.toggle('sidebar-collapsed');
+            
+            if (body.classList.contains('sidebar-collapsed')) {
+              sidebarToggle.innerHTML = '<i class="fas fa-chevron-right"></i>';
+              localStorage.setItem('sidebar', 'collapsed');
+            } else {
+              sidebarToggle.innerHTML = '<i class="fas fa-chevron-left"></i>';
+              localStorage.setItem('sidebar', 'expanded');
+            }
           });
         }
         
-        // Run immediately
-        showStudentNavigation();
-        
-        // Theme toggle with animation
-        themeToggle.addEventListener('click', function() {
-          if (body.classList.contains('light-mode')) {
-            body.classList.remove('light-mode');
-            body.classList.add('dark-mode');
-            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            localStorage.setItem('theme', 'dark');
-          } else {
-            body.classList.remove('dark-mode');
-            body.classList.add('light-mode');
-            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-            localStorage.setItem('theme', 'light');
-          }
-          
-          showStudentNavigation();
-        });
-        
-        // Apply saved theme preference
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-          body.classList.remove('light-mode');
-          body.classList.add('dark-mode');
-          themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-        }
-        
-        // Mobile menu toggle with overlay
-        menuToggle.addEventListener('click', function() {
-          body.classList.toggle('sidebar-open');
-          showStudentNavigation();
-        });
-        
-        // IMPROVED: Sidebar collapse toggle with smoother transitions
-        sidebarToggle.addEventListener('click', function() {
-          body.classList.toggle('sidebar-collapsed');
-          
-          if (body.classList.contains('sidebar-collapsed')) {
-            sidebarToggle.innerHTML = '<i class="fas fa-chevron-right"></i>';
-            localStorage.setItem('sidebar', 'collapsed');
-          } else {
-            sidebarToggle.innerHTML = '<i class="fas fa-chevron-left"></i>';
-            localStorage.setItem('sidebar', 'expanded');
-          }
-          
-          // Delay visibility changes slightly to allow for smooth transitions
-          setTimeout(showStudentNavigation, 10);
-        });
-        
-        // Apply saved sidebar state
+        // Apply saved sidebar state on page load
         const savedSidebar = localStorage.getItem('sidebar');
         if (savedSidebar === 'collapsed') {
           body.classList.add('sidebar-collapsed');
-          sidebarToggle.innerHTML = '<i class="fas fa-chevron-right"></i>';
+          if (sidebarToggle) {
+            sidebarToggle.innerHTML = '<i class="fas fa-chevron-right"></i>';
+          }
         }
         
-        // Close sidebar when overlay clicked
-        sidebarOverlay.addEventListener('click', function() {
-          body.classList.remove('sidebar-open');
+        // Make sure all student navigation items are visible
+        document.querySelectorAll('.student-nav-item').forEach(item => {
+          item.style.display = 'block';
+          item.style.visibility = 'visible';
+          item.style.opacity = '1';
         });
-        
-        // Active link highlighting
-        const currentPath = window.location.pathname;
-        document.querySelectorAll('.sidebar-link').forEach(link => {
-          const href = link.getAttribute('href');
-          if (href && currentPath === href) {
-            link.classList.add('active');
-          }
-        });
-        
-        // Run navigation visibility check again after a delay
-        setTimeout(showStudentNavigation, 300);
       });
     </script>
   </body>

@@ -13,13 +13,11 @@
 <div class="container">
   <div class="search-container">
     <form method="GET" action="{% url 'classroom:teachers_list' %}" class="search-form">
-      <div class="search-input-container">
+      <div class="search-input-group">
         <i class="fas fa-search search-icon"></i>
         <input type="search" name="q" placeholder="Search for teachers..." class="search-input">
+        <button type="submit" class="search-button">Search</button>
       </div>
-      <button type="submit" class="search-button">
-        Search
-      </button>
     </form>
   </div>
   
@@ -145,56 +143,80 @@
   }
   
   .search-form {
-    display: flex;
-    gap: 1rem;
-    max-width: 600px;
+    width: 100%;
   }
   
-  .search-input-container {
-    position: relative;
-    flex-grow: 1;
+  .search-input-group {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    padding: 0 0.5rem;
+    transition: box-shadow 0.3s;
+  }
+  
+  .search-input-group:focus-within {
+    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.3), 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
   }
   
   .search-icon {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
     color: #a0aec0;
+    margin: 0 0.5rem;
+    font-size: 0.9rem;
   }
   
   .search-input {
-    width: 100%;
-    padding: 0.75rem 0.75rem 0.75rem 2.5rem;
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
+    flex-grow: 1;
+    border: none;
+    padding: 0.75rem 0.5rem;
     font-size: 1rem;
-    color: #2d3748;
-    background-color: #f7fafc;
-    transition: all 0.3s ease;
-  }
-  
-  .search-input:focus {
     outline: none;
-    border-color: #4299e1;
-    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
-    background-color: #fff;
+    background: transparent;
+    color: #2d3748;
   }
   
   .search-button {
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
     background-color: #4299e1;
-    color: white;
-    font-size: 0.95rem;
-    font-weight: 600;
     border: none;
-    transition: all 0.2s ease;
+    color: white;
+    padding: 0.65rem 1.25rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.95rem;
     cursor: pointer;
+    transition: all 0.3s;
   }
   
   .search-button:hover {
     background-color: #3182ce;
+    box-shadow: 0 4px 10px rgba(66, 153, 225, 0.3);
+    transform: translateY(-1px);
+  }
+  
+  /* Responsive styles for search */
+  @media (max-width: 768px) {
+    .search-input-group {
+      flex-direction: column;
+      padding: 0;
+    }
+    
+    .search-icon {
+      display: none;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .search-button {
+      width: 100%;
+      border-radius: 0 0 8px 8px;
+      padding: 0.75rem;
+    }
   }
   
   /* Empty state styling */

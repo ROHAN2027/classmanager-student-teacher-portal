@@ -23,40 +23,15 @@
     </div>
     
     <div class="form-body">
-      <form enctype="multipart/form-data" method="post" class="submission-form">
+      <form enctype="multipart/form-data" method="post" class="submission-form" id="assignmentForm">
         {% csrf_token %}
-        
-        <div class="file-upload-container">
-          <div class="file-upload-icon">
-            <i class="fas fa-cloud-upload-alt"></i>
-          </div>
-          <div class="file-upload-text">
-            <span id="file-name">No file selected</span>
-            <p>Drag & drop or click to browse files</p>
-          </div>
-          <div class="custom-file-input">
-            {{ form.file }}
-          </div>
-        </div>
-        
-        <div class="form-field">
-          <label for="{{ form.description.id_for_label }}">
-            <i class="fas fa-comment-alt"></i> 
-            Description
-          </label>
-          {{ form.description }}
-          <small class="form-hint">Add any notes or comments about your submission</small>
-        </div>
-        
+        {% bootstrap_form form %}
         <div class="form-actions">
           <a href="{% url 'classroom:class_assignment' %}" class="btn-cancel">
             <i class="fas fa-arrow-left"></i>
             Back
           </a>
-          <button type="submit" class="btn-submit">
-            <i class="fas fa-paper-plane"></i>
-            Submit Assignment
-          </button>
+          <input type="submit" class="btn-submit" value="Submit Assignment">
         </div>
       </form>
     </div>
@@ -142,78 +117,18 @@
     padding: 2rem 1.5rem;
   }
   
-  /* File upload styling */
-  .file-upload-container {
-    position: relative;
-    border: 2px dashed #cbd5e0;
-    border-radius: 8px;
-    padding: 2rem 1.5rem;
-    margin-bottom: 2rem;
-    text-align: center;
-    cursor: pointer;
-    background-color: #f7fafc;
-    transition: all 0.3s ease;
-  }
-  
-  .file-upload-container:hover {
-    border-color: #4299e1;
-    background-color: rgba(66, 153, 225, 0.05);
-  }
-  
-  .file-upload-icon {
-    font-size: 2.5rem;
-    color: #4299e1;
-    margin-bottom: 1rem;
-  }
-  
-  .file-upload-text #file-name {
-    font-weight: 600;
-    color: #2d3748;
-    margin-bottom: 0.5rem;
-    display: block;
-  }
-  
-  .file-upload-text p {
-    color: #718096;
-    margin: 0;
-  }
-  
-  .custom-file-input {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-  }
-  
-  .custom-file-input input[type="file"] {
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
-  }
-  
-  /* Form fields */
-  .form-field {
+  /* Bootstrap form styling overrides */
+  .form-group {
     margin-bottom: 1.5rem;
   }
   
-  .form-field label {
-    display: block;
+  .form-group label {
     font-weight: 600;
     color: #4a5568;
     margin-bottom: 0.75rem;
   }
   
-  .form-field label i {
-    color: #4299e1;
-    margin-right: 0.5rem;
-  }
-  
-  .form-field textarea {
-    width: 100%;
-    min-height: 120px;
+  .form-control {
     padding: 0.75rem 1rem;
     border-radius: 8px;
     border: 1px solid #e2e8f0;
@@ -223,15 +138,40 @@
     background-color: #f7fafc;
   }
   
-  .form-field textarea:focus {
+  .form-control:focus {
     outline: none;
     border-color: #4299e1;
     box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
     background-color: #fff;
   }
   
-  .form-hint {
-    display: block;
+  textarea.form-control {
+    min-height: 120px;
+  }
+  
+  .custom-file {
+    height: auto;
+  }
+  
+  .custom-file-label {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    height: auto;
+    display: flex;
+    align-items: center;
+    background-color: #f7fafc;
+  }
+  
+  .custom-file-label::after {
+    height: auto;
+    padding: 0.75rem 1rem;
+    background-color: #4299e1;
+    color: white;
+    border-radius: 0 8px 8px 0;
+  }
+  
+  .form-text {
     color: #718096;
     font-size: 0.85rem;
     margin-top: 0.5rem;
@@ -275,19 +215,28 @@
     font-size: 0.95rem;
     font-weight: 600;
     border: none;
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
     transition: all 0.2s ease;
     cursor: pointer;
   }
   
-  .btn-submit i {
+  .btn-submit::before {
+    content: "\f1d8";  /* Font Awesome paper plane icon */
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
     margin-right: 0.5rem;
   }
   
   .btn-submit:hover {
     background-color: #3182ce;
     transform: translateY(-2px);
+  }
+  
+  /* Hide default bootstrap submit button */
+  .btn-primary:not(.btn-submit) {
+    display: none !important;
   }
   
   /* Animations */
@@ -335,49 +284,10 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const fileInput = document.querySelector('input[type="file"]');
-    const fileNameDisplay = document.getElementById('file-name');
-    const uploadContainer = document.querySelector('.file-upload-container');
-    
-    fileInput.addEventListener('change', function() {
-      if (this.files.length > 0) {
-        fileNameDisplay.textContent = this.files[0].name;
-        uploadContainer.style.borderColor = '#4299e1';
-        uploadContainer.style.backgroundColor = 'rgba(66, 153, 225, 0.05)';
-      } else {
-        fileNameDisplay.textContent = 'No file selected';
-        uploadContainer.style.borderColor = '#cbd5e0';
-        uploadContainer.style.backgroundColor = '#f7fafc';
-      }
-    });
-    
-    // Handle drag and drop functionality
-    uploadContainer.addEventListener('dragover', function(e) {
-      e.preventDefault();
-      this.style.borderColor = '#4299e1';
-      this.style.backgroundColor = 'rgba(66, 153, 225, 0.1)';
-    });
-    
-    uploadContainer.addEventListener('dragleave', function(e) {
-      e.preventDefault();
-      if (!fileInput.files.length) {
-        this.style.borderColor = '#cbd5e0';
-        this.style.backgroundColor = '#f7fafc';
-      }
-    });
-    
-    uploadContainer.addEventListener('drop', function(e) {
-      e.preventDefault();
-      fileInput.files = e.dataTransfer.files;
-      
-      if (fileInput.files.length > 0) {
-        fileNameDisplay.textContent = fileInput.files[0].name;
-      }
-    });
-    
-    // Click to select file
-    uploadContainer.addEventListener('click', function() {
-      fileInput.click();
+    // Hide any bootstrap default submit buttons
+    const defaultSubmitButtons = document.querySelectorAll('.btn.btn-primary:not(.btn-submit)');
+    defaultSubmitButtons.forEach(button => {
+      button.style.display = 'none';
     });
   });
 </script>
